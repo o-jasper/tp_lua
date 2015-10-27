@@ -1,3 +1,12 @@
+
+local function init_fn() end
+
+local function new_fn(self, new)
+   new = setmetatable(new or {}, self)
+   new:init()
+   return new
+end
+
 return function (name, ...)
    assert(type(name) == "string")
    local Class = {}
@@ -8,10 +17,8 @@ return function (name, ...)
    Class.__index = Class
    Class.__name  = name
 
-   Class.new = function(self, new)
-      new = setmetatable(new or {}, self)
-      new:init()
-      return new
-   end
+   Class.new  = new_fn
+   Class.init = init_fn
+
    return Class
 end
