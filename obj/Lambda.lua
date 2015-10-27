@@ -22,9 +22,7 @@ function Lambda:apply(args)
    table.insert(self.applications, app)
 end
 
-local function to_lua(expr)
-   return type(expr) == "table" and expr:to_lua() or  tostring(expr)
-end
+local to_lua = require "obj.lib.to_lua"
 
 function Lambda:to_lua()
    local body = {}

@@ -3,7 +3,9 @@
 
 local Expr = require "obj.Expr"
 local Lambda  = require "obj.Lambda"
+local Call  = require "obj.Call"
 local Var = require "obj.Var"
+local Str = require "obj.Str"
 
 local function absorb(new, scope)
    if type(new) == "table" then
@@ -12,7 +14,7 @@ local function absorb(new, scope)
          local rawargs = table.remove(new, 1)
          local args = {rawargs.name}
          for _, var in ipairs(rawargs) do table.insert(args, var) end
-         
+
          local ret = Lambda:new({ args = args, scope=scope })
 
          for _,var in ipairs(args) do scope[var] = Var:new{var, ret, {}} end
@@ -25,14 +27,21 @@ local function absorb(new, scope)
          mac.scope = scope
          return absorb(mac:apply(new))
       elseif new.name == "str" then  -- Direct string
-         return Expr:new(new)
-      else -- Function call.
+         return Str:new(new)
+      else
+         if new.name == "call" then  -- Calls that are direct, make them as usual.
+            if type(new[1]) == "string" then
+               new.name = new[1]
+               table.remove(new, 1)
+            end
+         end
+
          new.scope = scope
 
          for i = 1, #new do
             new[i] = absorb(new[i], new.scope)
          end
-         return Expr:new(new)
+         return (new.name == "call" and Call or Expr):new(new)
       end
    elseif type(new) == "string" then
       local scope, got = scope, nil
