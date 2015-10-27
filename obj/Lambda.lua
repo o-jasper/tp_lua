@@ -8,6 +8,8 @@ function Lambda:init()
    Expr.init(self)
 
    self.applications = {}
+
+   assert(self.args)
 end
 
 -- TODO mess.
@@ -28,7 +30,7 @@ function Lambda:to_lua()
    local body = {}
    for _, el in ipairs(self) do table.insert(body, to_lua(el)) end
    return string.format("function (%s)\n  %s end",
-      table.concat(self.args, ", "), table.concat(body, "\n  "))
+                        table.concat(self.args, ", "), table.concat(body, "\n  "))
 end
 
 return Lambda
