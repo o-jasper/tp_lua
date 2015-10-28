@@ -27,7 +27,6 @@ local function infix(name, whole)
 end
 
 ----- To lua.
-
 local to_lua = require "obj.lib.to_lua"
 
 local function infix(name, whole)
@@ -56,4 +55,20 @@ function Expr:to_lua()
    end
 end
 
+----- Typecalc stuff.
+local typecalc = require "obj.lib.typecalc"
+
+function Expr:typecalc(case)
+   local si, fun = unpack(self.name == "call" and {2, typecalc(self, self[1], case)}
+                             or {1, self:var(self.name)})
+   local in_tp = {}
+   for i = si, #self do
+      table.insert(in_tp, typecalc(self, self[i], case))
+   end
+   local out_tp = fun:typecalc(case, in_tp)
+   self.cases[case] = {in_tp, out_tp}
+   return out_tp
+end
+
+----- Return.
 return Expr

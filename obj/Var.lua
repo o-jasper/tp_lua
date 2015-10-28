@@ -16,10 +16,20 @@ function Var:init()
 
    assert(type(self.name) == "string")
    assert(type(self.occurances) == "table")
+
+   self.cases = {}
 end
 
 function Var:to_lua()
    return self.name
+end
+
+function Var:typeset(case, tp)
+   self.cases[case] = tp
+end
+
+function Var:typecalc(case)
+   return self.cases[case]
 end
 
 return Var

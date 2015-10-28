@@ -7,21 +7,10 @@ local Lambda = require("common.class")("Lambda", Expr)
 function Lambda:init()
    Expr.init(self)
 
-   self.applications = {}
-
    assert(self.args)
 end
 
--- TODO mess.
-function Lambda:apply(args)
-   local app = { scope = { parent = self.scope } }
-   for i, var in ipairs(self.args) do  -- Fill out the values.
-      app.scope[var] = args[i]
-   end
-
-   table.insert(self.applications, app)
-end
-
+----- To lua.
 local to_lua = require "obj.lib.to_lua"
 
 function Lambda:to_lua()
@@ -29,6 +18,21 @@ function Lambda:to_lua()
    for _, el in ipairs(self) do table.insert(body, to_lua(el)) end
    return string.format("function (%s)\n  %s end",
                         table.concat(self.args, ", "), table.concat(body, "\n  "))
+end
+
+----- Typecalc stuff.
+function Lambda:typecalc(case, in_tp)
+   assert(#in_tp == #args)  -- TODO optionals?
+
+   for i, tp in pairs(in_tp) do  -- Add the option to all the arguments.
+      self:var(self.args[i]):typeset(case, tp)
+   end
+
+   for _, b in ipairs(self) do
+      b:typecalc(base)
+   end
+
+   -- TODO collect return cases..
 end
 
 return Lambda
