@@ -18,27 +18,10 @@ function Expr:var(name)
    return got
 end
 
-local function infix(name, whole)
-   return function (expr) 
-      local ret = {}
-      for _, v in ipairs(expr) do table.insert(ret, to_lua(v)) end
-      return table.concat(ret, whole or string.format(" %s ", name or expr.name))
-   end
-end
-
 ----- To lua.
-local to_lua = require "steps.to_lua"
-
-local function infix(name, whole)
-   return function (expr) 
-      local ret = {}
-      for _, v in ipairs(expr) do table.insert(ret, to_lua(v)) end
-      return table.concat(ret, whole or string.format(" %s ", name or expr.name))
-   end
-end
-
 local handlers = {}
 
+local infix = require "el.lib.infix"
 -- All the infix ops. (lazy; currently all being parenthesis-surrounded)
 local function the_infix(expr) return "(" .. infix()(expr) .. ")" end
 for _, v in pairs({"+", "-", "*", "/", "%", "<", "<=", ">=", "~=", "or", "and"}) do
