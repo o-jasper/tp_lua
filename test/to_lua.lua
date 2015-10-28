@@ -1,9 +1,9 @@
-local absorb = require "obj.absorb"
+local elementify = require "steps.elementify"
 local p          = require("parse.Parser"):new{name="call"}
 local print_tree = require "print_tree"
 
 local function to_lua(expr)
-   return absorb(expr, {}):to_lua()
+   return elementify(expr, {}):to_lua()
 end
 
 local function ptl(str) 

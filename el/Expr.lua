@@ -27,7 +27,7 @@ local function infix(name, whole)
 end
 
 ----- To lua.
-local to_lua = require "obj.lib.to_lua"
+local to_lua = require "steps.to_lua"
 
 local function infix(name, whole)
    return function (expr) 
@@ -56,7 +56,7 @@ function Expr:to_lua()
 end
 
 ----- Typecalc stuff.
-local typecalc = require "obj.lib.typecalc"
+local typecalc = require "steps.typecalc"
 
 function Expr:typecalc(case)
    local si, fun = unpack(self.name == "call" and {2, typecalc(self, self[1], case)}

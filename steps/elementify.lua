@@ -1,11 +1,11 @@
 --  Copyright (C) 27-10-2015 Jasper den Ouden.
 --  under the terms of the GNU Affero General Public License
 
-local Expr = require "obj.Expr"
-local Lambda  = require "obj.Lambda"
-local Call  = require "obj.Call"
-local Var = require "obj.Var"
-local Str = require "obj.Str"
+local Expr   = require "el.Expr"
+local Lambda = require "el.Lambda"
+local Call   = require "el.Call"
+local Var = require "el.Var"
+local Str = require "el.Str"
 
 local function absorb(new, scope)
    if type(new) == "table" then

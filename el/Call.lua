@@ -1,6 +1,6 @@
-local Call = require("common.class")("Call", require "obj.Expr")
+local Call = require("common.class")("Call", require "el.Expr")
 
-local to_lua = require "obj.lib.to_lua"
+local to_lua = require "steps.to_lua"
 
 function Call:to_lua()
    if self[1] == "string" then  -- It is just a hidden "direct" function call.

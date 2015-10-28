@@ -1,7 +1,7 @@
 --  Copyright (C) 27-10-2015 Jasper den Ouden.
 --  under the terms of the GNU Affero General Public License
 
-local Expr   = require "obj.Expr"
+local Expr   = require "el.Expr"
 local Lambda = require("common.class")("Lambda", Expr)
 
 function Lambda:init()
@@ -11,7 +11,7 @@ function Lambda:init()
 end
 
 ----- To lua.
-local to_lua = require "obj.lib.to_lua"
+local to_lua = require "steps.to_lua"
 
 function Lambda:to_lua()
    local body = {}
