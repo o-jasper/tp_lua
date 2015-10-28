@@ -6,6 +6,7 @@ local Lambda = require "el.Lambda"
 local Call   = require "el.Call"
 local Var = require "el.Var"
 local Str = require "el.Str"
+local Return = require "el.Return"
 
 local function absorb(new, scope)
    if type(new) == "table" then
@@ -41,7 +42,9 @@ local function absorb(new, scope)
          for i = 1, #new do
             new[i] = absorb(new[i], new.scope)
          end
-         return (new.name == "call" and Call or Expr):new(new)
+
+         local new_from = ({ call=Call, ["return"]=Return })[new.name] or Expr
+         return new_from:new(new)
       end
    elseif type(new) == "string" then
       local scope, got = scope, nil
