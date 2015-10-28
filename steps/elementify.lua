@@ -8,7 +8,7 @@ local Var = require "el.Var"
 local Str = require "el.Str"
 local Return = require "el.Return"
 
-local function absorb(new, scope)
+local function elementify(new, scope)
    if type(new) == "table" then
       if new.name == "lambda" then  -- Function definition or creation of variables.
          local scope = { parent = new.scope or scope }
@@ -19,14 +19,14 @@ local function absorb(new, scope)
          local ret = Lambda:new({ args = args, scope=scope })
 
          for _,var in ipairs(args) do scope[var] = Var:new{var, ret, {}} end
-         for _, el in ipairs(new)  do table.insert(ret, absorb(el, scope)) end
+         for _, el in ipairs(new)  do table.insert(ret, elementify(el, scope)) end
 
          return ret
       elseif new.name == "exp" then  -- Use next object for macro expansion.
          new.scope = scope
-         local mac = absorb(table.remove(new, 1))
+         local mac = elementify(table.remove(new, 1))
          mac.scope = scope
-         return absorb(mac:apply(new))
+         return elementify(mac:apply(new))
       elseif new.name == "str" then  -- Direct string
          return Str:new(new)
       else
@@ -40,7 +40,7 @@ local function absorb(new, scope)
          new.scope = scope
 
          for i = 1, #new do
-            new[i] = absorb(new[i], new.scope)
+            new[i] = elementify(new[i], new.scope)
          end
 
          local new_from = ({ call=Call, ["return"]=Return })[new.name] or Expr
@@ -59,4 +59,4 @@ local function absorb(new, scope)
    end
 end
 
-return absorb
+return elementify
