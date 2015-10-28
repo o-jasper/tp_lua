@@ -2,12 +2,30 @@
 --  under the terms of the GNU Affero General Public License
 
 local Expr   = require "el.Expr"
+local Var = require "el.Var"
+
+local elementify = require "steps.elementify"
+
 local Lambda = require("common.class")("Lambda", Expr)
 
 function Lambda:init()
    Expr.init(self)
 
-   assert(self.args)
+   if not self.args then
+      local rawargs = table.remove(self, 1)
+      if type(rawargs) == "string" then
+         self.lname = rawargs
+         rawargs = table.remove(self, 1)
+      end
+      self.args = {rawargs.name}
+      for _, var in ipairs(rawargs) do table.insert(self.args, var) end
+   end
+
+
+   for _,var in ipairs(self.args) do self.scope[var] = Var:new{var, self, {}} end
+   for i = 1, #self do
+      self[i] = elementify(self[i], self.scope)
+   end
 end
 
 ----- To lua.

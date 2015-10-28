@@ -7,6 +7,11 @@ local Return = require("common.class")("Return", require "el.Expr")
 
 function Return:init()
    assert(self.scope)
+
+   self.return_name = #self > 1 and self[1] or "default"
+
+   self.scope.__return = self.scope.__return or {}
+   self.scope.__return[self.return_name] = self
 end
 
 local infix = require "el.lib.infix"
