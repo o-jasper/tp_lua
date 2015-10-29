@@ -7,17 +7,18 @@ local function to_lua(expr)
 end
 
 local function ptl(str) 
-   local expr = p:parse(str)
-   expr.name = expr[1]
-   table.remove(expr, 1)
+   local expr = p:parse("s " .. str)
+   expr = expr[2]
 --   print_tree(expr)
    print(to_lua(expr))
 end
 
-ptl [[call (lambda(a b) (return (+ a b))) 1 2]]
+--ptl "1"
 
-ptl [[call (lambda(a b sqr) (return (sqr (+ a b))))
+ptl [[(call (lambda(a b) (return (+ a b))) 1 2)]]
+
+ptl [[(call (lambda(a b sqr) (return (sqr (+ a b))))
  1 2
- (lambda (x) (return (* x x)))
+ (lambda (x) (return (* x x))))
 ]]
 
