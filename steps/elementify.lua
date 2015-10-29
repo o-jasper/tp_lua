@@ -34,6 +34,9 @@ local function elementify(new, scope)
          return (new_from or Expr):new(new)
       end
    elseif type(new) == "string" then
+      if tonumber(new) then
+         return tonumber(new)
+      end
       local scope, got = scope, nil
       while scope and not got do
          got = scope[new]
