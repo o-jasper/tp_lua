@@ -5,9 +5,9 @@ local print_tree = require "print_tree"
 
 local function ptl(str) 
    local expr = p:parse("s " .. str)
-   expr = expr[2]
+   expr = elementify(expr[2])
 --   print_tree(expr)
-   print(to_lua(elementify(expr)))
+   print(to_lua(expr))
 end
 
 ptl "1"
