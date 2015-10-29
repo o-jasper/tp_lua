@@ -27,5 +27,16 @@ function Call:to_lua()
    end
 end
 
-return Call
+local typecalc = require "steps.typecalc"
 
+function Call:typecalc(case)
+   local in_tp = {}
+   for i = 2, #self do
+      table.insert(in_tp, typecalc(self, self[i], case))
+   end
+   local out_tp = self[1]:typecalc(case, in_tp)
+   self.cases[case] = {in_tp, out_tp}
+   return out_tp
+end
+
+return Call

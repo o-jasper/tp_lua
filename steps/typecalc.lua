@@ -1,6 +1,7 @@
 local Tp = require "tp.Tp"
 
 local function typecalc(self, e, case)
+   local e = e or self
    local etp = type(e)
    if etp == "table" then
       return e:typecalc(case)

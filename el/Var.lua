@@ -24,7 +24,7 @@ function Var:to_lua()
    return self.name
 end
 
-function Var:typeset(case, tp)
+function Var:type_pass(case, tp)
    self.cases[case] = tp
 end
 

@@ -5,4 +5,8 @@ function Str:to_lua()
    return (self.s or "\"") .. self[1] .. (self.e or self.s or "\"")
 end
 
+function Str:typecalc()
+   return Tp:new("Str")
+end
+
 return Str

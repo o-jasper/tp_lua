@@ -8,24 +8,29 @@ local elementify = require "steps.elementify"
 
 local Lambda = require("common.class")("Lambda", Expr)
 
+Lambda.lambda_name = "default"
+
 function Lambda:init()
    Expr.init(self)
 
    if not self.args then
       local rawargs = table.remove(self, 1)
       if type(rawargs) == "string" then
-         self.lname = rawargs
+         self.lambda_name = rawargs
          rawargs = table.remove(self, 1)
       end
       self.args = {rawargs.name}
       for _, var in ipairs(rawargs) do table.insert(self.args, var) end
    end
 
-
    for _,var in ipairs(self.args) do self.scope[var] = Var:new{var, self, {}} end
+   self.scope["__return_" .. self.lambda_name] = self
+
    for i = 1, #self do
       self[i] = elementify(self[i], self.scope)
    end
+
+   self.returned_here = {}
 end
 
 ----- To lua.
@@ -38,19 +43,35 @@ function Lambda:to_lua()
                         table.concat(self.args, ", "), table.concat(body, "\n  "))
 end
 
+local function tp_or_combine(x)  -- TODO lazy.
+   return #x > 1 and Tp:new("any") or x[1]
+end
+
 ----- Typecalc stuff.
+function Lambda:type_pass(case, in_tp)  -- This collects return cases.
+   print("*", in_tp)
+   local list = self.returned_here[case] or {}
+   if #list == 0 then self.returned_here = list end
+   table.insert(list, in_tp)
+end
+
+local typecalc = require "steps.typecalc"
+
 function Lambda:typecalc(case, in_tp)
-   assert(#in_tp == #args)  -- TODO optionals?
+   assert(#in_tp == #self.args)  -- TODO optionals?
 
-   for i, tp in pairs(in_tp) do  -- Add the option to all the arguments.
-      self:var(self.args[i]):typeset(case, tp)
+   local here = {}
+   self.returned_here[case] = here
+
+   for i, tp in pairs(in_tp) do  -- Add the type to all the arguments.
+      self:var(self.args[i]):type_pass(case, tp)
    end
 
-   for _, b in ipairs(self) do
-      b:typecalc(base)
-   end
+   for _, b in ipairs(self) do typecalc(self, b, case) end
 
-   -- TODO collect return cases..
+   self.cases[case] = tp_or_combine(here)
+
+   return self.cases[case]
 end
 
 return Lambda
