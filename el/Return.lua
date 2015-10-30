@@ -24,7 +24,7 @@ local typecalc = require "steps.typecalc"
 function Return:typecalc(case)
    -- Register that it returned.
    local got = self:var("__return_" .. self.return_name)
-   return got:type_pass(case, typecalc(self[1]))
+   return got:type_pass(case, typecalc(self[1], nil, case))
    -- TODO return value should be pointless.
 end
 
