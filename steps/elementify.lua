@@ -7,6 +7,8 @@ local Str    = require "el.Str"
 local Return = require "el.Return"
 
 local function elementify(new, scope)
+   scope = scope or require "el.virtual.default_scope"
+
    if type(new) == "table" then
       if new.name == "lambda" then  -- Function definition or creation of variables.
          new.scope={ parent = new.scope or scope }

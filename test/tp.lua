@@ -11,7 +11,7 @@ local tc_cnt = 0
 
 local function ptl(str) 
    local expr = p:parse("s " .. str)
-   expr = elementify(expr[2], {})
+   expr = elementify(expr[2])
    --print_tree(expr)
    tc_cnt = tc_cnt + 1
    local tp = typecalc(expr, nil, tc_cnt)
