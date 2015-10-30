@@ -13,4 +13,9 @@ Public["+"].typecalc = function(self, case, in_type)
    return Tp:new{name="plusresult"}  -- TODO
 end
 
+Public["*"] = Op:new{name="*"}
+Public["*"].typecalc = function(self, case, in_type)
+   return Tp:new{name="timesresult"}  -- TODO
+end
+
 return Public

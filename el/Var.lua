@@ -6,6 +6,8 @@
 local Var = require("common.class")("Var")
 
 function Var:init()
+   assert(self.scope)
+
    if self[1] then
       self.name = self[1]
    end
@@ -24,12 +26,20 @@ function Var:to_lua()
    return self.name
 end
 
-function Var:type_pass(case, tp)
-   self.cases[case] = tp
+function Var:type_pass(case, val)
+   self.cases[case] = val
 end
 
-function Var:typecalc(case)
-   return self.cases[case]
+local typecalc = require "steps.typecalc"
+
+function Var:typecalc(case, input)
+   local got = self.cases[case]
+   if input then
+      assert(type(got) == "table")
+      return got:typecalc(case, input)
+   else
+      return typecalc(self, self.cases[case], case)
+   end
 end
 
 return Var

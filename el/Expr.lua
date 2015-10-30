@@ -42,12 +42,8 @@ end
 local typecalc = require "steps.typecalc"
 
 function Expr:typecalc(case)
-   local in_tp = {}
-   for _, e in ipairs(self) do
-      table.insert(in_tp, typecalc(self, e, case))
-   end
-   local out_tp = self:var(self.name):typecalc(case, in_tp)
-   self.cases[case] = {in_tp, out_tp}
+   local out_tp = self:var(self.name):typecalc(case, self)
+   self.cases[case] = out_tp
    return out_tp
 end
 

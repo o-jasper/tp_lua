@@ -23,7 +23,9 @@ function Lambda:init()
       for _, var in ipairs(rawargs) do table.insert(self.args, var) end
    end
 
-   for _,var in ipairs(self.args) do self.scope[var] = Var:new{var, self, {}} end
+   for _,var in ipairs(self.args) do
+      self.scope[var] = Var:new{var, self, {}, scope=self.scope}
+   end
    self.scope["__return_" .. self.lambda_name] = self
 
    for i = 1, #self do
@@ -49,7 +51,6 @@ end
 
 ----- Typecalc stuff.
 function Lambda:type_pass(case, in_tp)  -- This collects return cases.
-   print("*", in_tp)
    local list = self.returned_here[case] or {}
    if #list == 0 then self.returned_here = list end
    table.insert(list, in_tp)
@@ -57,14 +58,14 @@ end
 
 local typecalc = require "steps.typecalc"
 
-function Lambda:typecalc(case, in_tp)
-   assert(#in_tp == #self.args)  -- TODO optionals?
+function Lambda:typecalc(case, input)
+   assert(#input == #self.args)  -- TODO optionals?
 
    local here = {}
    self.returned_here[case] = here
 
-   for i, tp in pairs(in_tp) do  -- Add the type to all the arguments.
-      self:var(self.args[i]):type_pass(case, tp)
+   for i, e in ipairs(input) do  -- Add the type to all the arguments.
+      self:var(self.args[i]):type_pass(case, e)
    end
 
    for _, b in ipairs(self) do typecalc(self, b, case) end

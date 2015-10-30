@@ -30,12 +30,13 @@ end
 local typecalc = require "steps.typecalc"
 
 function Call:typecalc(case)
-   local in_tp = {}
+   local input = {}
    for i = 2, #self do
-      table.insert(in_tp, typecalc(self, self[i], case))
+      --print(i, self[i], type(self[i]) == "table" and self[i].name)
+      table.insert(input, self[i])
    end
-   local out_tp = self[1]:typecalc(case, in_tp)
-   self.cases[case] = {in_tp, out_tp}
+   local out_tp = self[1]:typecalc(case, input)
+   self.cases[case] = out_tp
    return out_tp
 end
 

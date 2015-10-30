@@ -25,8 +25,8 @@ ptl [[(call (lambda(q) (return 1)) 3)]]
 
 ptl [[(call (lambda(a b) (return (+ a b))) 1 2)]]
 
---ptl [[(call (lambda(a b sqr) (return (sqr (+ a b))))
--- 1 2
--- (lambda (x) (return (* x x))))
---]]
+ptl [[(call (lambda(a b sqr) (return (sqr (+ a b))))
+ 1 2
+ (lambda (x) (return (* x x))))
+]]
 
