@@ -24,7 +24,7 @@ local handlers = {}
 local infix = require "el.lib.infix"
 -- All the infix ops. (lazy; currently all being parenthesis-surrounded)
 local function the_infix(expr) return "(" .. infix()(expr) .. ")" end
-for _, v in pairs({"+", "-", "*", "/", "%", "<", "<=", ">=", "~=", "or", "and"}) do
+for _, v in pairs{"+", "-", "*", "/", "%", "<", "<=", ">=", "~=", "or", "and"} do
    handlers[v] = the_infix
 end
 
@@ -39,8 +39,6 @@ function Expr:to_lua()
 end
 
 ----- Typecalc stuff.
-local typecalc = require "steps.typecalc"
-
 function Expr:typecalc(case)
    local out_tp = self:var(self.name):typecalc(case, self)
    self.cases[case] = out_tp

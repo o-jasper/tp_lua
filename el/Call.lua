@@ -27,8 +27,6 @@ function Call:to_lua()
    end
 end
 
-local typecalc = require "steps.typecalc"
-
 function Call:typecalc(case)
    local input = {}
    for i = 2, #self do
