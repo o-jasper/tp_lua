@@ -37,8 +37,10 @@ function Var:typecalc(case, input)
    if input then
       assert(type(got) == "table")
       return got:typecalc(case, input)
-   else
+   elseif self.cases[case] then
       return typecalc(self, self.cases[case], case)
+   else
+      error(string.format("%q not set(%s)", self.name, case))
    end
 end
 
