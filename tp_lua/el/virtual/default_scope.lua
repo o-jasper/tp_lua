@@ -8,7 +8,9 @@ local Tp = require "tp.Tp"
 
 local Public = {}
 
+-- Turns numberic types into a range.
 local function num_rangify(a)
+   -- Approach to equality is just to turn it into a range and back.
    if a.name == "eql" then
       return (a[1]%1 == 0 and "int" or "num"), a[1], a[1]
    else
@@ -16,7 +18,12 @@ local function num_rangify(a)
       return a.name, a[1], a[2]
    end
 end
+
 local function num_fun_2(a, b, fun)
+   if a.name == "real" or b.name == "real" then
+      return Tp:new{name="real"}
+   end
+
    local an, af,at = num_rangify(a)
    local bn, bf,bt = num_rangify(b)
 
@@ -53,44 +60,47 @@ local function tps_list(self, case, input)
    return tps
 end
 
-Public["+"] = Op:new{name="+"}
-Public["+"].typecalc = function(self, case, input)
+local function newop(name)
+   Public[name] = Op:new{name=name}
+   return Public[name]
+end
+
+newop("+").typecalc = function(self, case, input)
    return num_fun(tps_list(self, case, input),
                   function(af, at, bf, bt) return nil, af + bf, at + bt end)
 end
 
-Public["-"] = Op:new{name="-"}
-Public["-"].typecalc = function(self, case, input)
+newop("-").typecalc = function(self, case, input)
    return num_fun(tps_list(input),
                   function(af, at, bf, bt) return nil, af - bt, at - bf end)
 end
 
-Public["*"] = Op:new{name="*"}
-Public["*"].typecalc = function(self, case, input)
-   local function fun(af, at, bf, bt)  -- This is right, right?
+newop("*").typecalc = function(self, case, input)
+   local function fun(af, at, bf, bt)  -- TODO This is right, right?
       local ff, ft, tf, tt = af*bf, af*bt, at*bf, at*bt
       local f, t = math.min(ff, ft, tf, tt), math.max(ff, ft, tf, tt)
 
       if (af <= 0 and at >= 0) or (bf <= 0  and bt >= 0) then
-         f = math.min(f, 0)
-         t = math.max(t, 0)
+         return nil, math.min(f, 0), math.max(t, 0)
+      else
+         return nil , f, t
       end
-
-      return nil , f, t
    end
    return num_fun(tps_list(self, case, input), fun)
 end
 
-Public.slot = Op:new{name="slot"}
-function Public.slot:typecalc(case, input)
-   local obj, slot_key = unpack(tps_list(input))
-   assert(obj.name == "table", "Can only access slots from tables.")
-   local straight = obj.static[slot_key] or obj.dict
-   if straight then
-      return straight
-   else
-      --- TODO in the metatable, access `__index` it is an array, or a function.
+newop("/").typecalc = function(self, case, input)
+   local function fun(af, at, bf, bt)  -- TODO This is right, right?
+      local ff, ft, tf, tt = af/bf, af/bt, at/bf, at/bt
+      local f, t = math.min(ff, ft, tf, tt), math.max(ff, ft, tf, tt)
+
+      if (bf <= 0  and bt >= 0) then
+         return "real"
+      else
+         return nil , f, t
+      end
    end
+   return num_fun(tps_list(self, case, input), fun)
 end
 
 return Public
